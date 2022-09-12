@@ -85,7 +85,12 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        res = self._update(observations, actions, **kwargs)
+        self.optimizer.zero_grad()
+        loss = -self.forward(observations).log_prob(actions).mean()
+        loss.backward()
+        self.optimizer.step()
+
+        return {'Training Loss': ptu.to_numpy(loss)}
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
