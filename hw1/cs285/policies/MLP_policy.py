@@ -85,12 +85,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        self.optimizer.zero_grad()
-        loss = -self.forward(observations).log_prob(actions).mean()
-        loss.backward()
-        self.optimizer.step()
-
-        return {'Training Loss': ptu.to_numpy(loss)}
+        raise NotImplementedError
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
@@ -120,7 +115,11 @@ class MLPPolicySL(MLPPolicy):
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
-        loss = self.loss(self.forward(ptu.from_numpy(observations)).sample(), ptu.from_numpy(actions))
+        self.optimizer.zero_grad()
+        loss = -self.forward(ptu.from_numpy(observations)).log_prob(ptu.from_numpy(actions)).sum()
+        loss.backward()
+        self.optimizer.step()
+
         return {
             # You can add extra logging information here, but keep this line
             'Training Loss': ptu.to_numpy(loss),
