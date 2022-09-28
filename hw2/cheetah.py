@@ -1,0 +1,15 @@
+# Credits: https://edstem.org/us/courses/24422/discussion/1763630?comment=4174833
+import shlex, subprocess
+
+commands = []
+batch_size_list = [10000, 30000, 50000]
+lr_list = [0.005, 0.01, 0.02]
+for batch_size in batch_size_list:
+    for lr in lr_list:
+        command = "python ./cs285/scripts/run_hw2.py --env_name HalfCheetah-v4 --ep_len 150 --discount 0.95 -n 100 -l 2 -s 32 -b {batch_size} -lr {lr} -rtg --nn_baseline --exp_name q4_search_b{batch_size}_lr{lr}_rtg_nnbaseline".format(batch_size=batch_size, lr=lr)
+        commands.append(command)
+
+if __name__ == "__main__":
+    for command in commands:
+        args = shlex.split(command)
+        subprocess.Popen(args)
