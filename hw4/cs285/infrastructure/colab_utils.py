@@ -19,7 +19,7 @@ def show_video():
              </video>'''.format(encoded.decode('ascii'))))
   else: 
     print("Could not find video")
-
+    
 
 def wrap_env(env):
   env = RecordVideo(env, '/content/video')

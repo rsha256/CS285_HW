@@ -47,7 +47,6 @@ class SACAgent(BaseAgent):
         self.training_step = 0
         self.replay_buffer = ReplayBuffer(max_size=100000)
 
-    # func sign. per https://edstem.org/us/courses/24422/discussion/1853713?comment=4257468
     def update_critic(self, ob_no, ac_na, next_ob_no, re_n, terminal_n):
         # TODO: 
         # 1. Compute the target Q value. 
