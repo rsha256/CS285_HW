@@ -131,3 +131,7 @@ dmypy.json
 data/
 data/*
 *data/*
+
+# MacOS Finder moment
+.DS_Store
+
