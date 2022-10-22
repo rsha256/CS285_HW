@@ -168,7 +168,6 @@ def wrap_deepmind_ram(env):
 def wrap_deepmind(env):
     """Configure environment for DeepMind-style Atari.
     """
-    # assert 'NoFrameskip' in env.spec.id
     env = EpisodicLifeEnv(env)
     env = NoopResetEnv(env, noop_max=30)
     env = MaxAndSkipEnv(env, skip=4)

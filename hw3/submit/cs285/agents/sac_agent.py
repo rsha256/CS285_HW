@@ -47,7 +47,6 @@ class SACAgent(BaseAgent):
         self.training_step = 0
         self.replay_buffer = ReplayBuffer(max_size=100000)
 
-    # func sign. per https://edstem.org/us/courses/24422/discussion/1853713?comment=4257468
     def update_critic(self, ob_no, ac_na, next_ob_no, re_n, terminal_n):
         # TODO: 
         # 1. Compute the target Q value. 
@@ -58,7 +57,7 @@ class SACAgent(BaseAgent):
         ac_na = ptu.from_numpy(ac_na)
         next_ob_no = ptu.from_numpy(next_ob_no)
         re_n = ptu.from_numpy(re_n)
-        terminal_ = ptu.from_numpy(terminal_n)
+        terminal_n = ptu.from_numpy(terminal_n)
         dist = self.actor(next_ob_no)
         next_ac_na = dist.rsample()
         next_log_pi = torch.sum(dist.log_prob(next_ac_na), dim=1).detach()
