@@ -36,10 +36,21 @@ class MLPPolicySAC(MLPPolicy):
     @property
     def alpha(self):
         # TODO: get this from previous HW
+        entropy = self.log_alpha.exp()
         return entropy
 
     def get_action(self, obs: np.ndarray, sample=True) -> np.ndarray:
         # TODO: get this from previous HW
+        if len(obs.shape) > 1:
+            observation = obs
+        else:
+            observation = obs[None]
+
+        observation = ptu.from_numpy(observation)
+        dist = self(observation)
+        action = dist.sample() if sample else dist.mean
+        action = action.clamp(*self.action_range)
+        action = ptu.to_numpy(action)
         return action
 
     # This function defines the forward pass of the network.
@@ -49,8 +60,34 @@ class MLPPolicySAC(MLPPolicy):
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor):
         # TODO: get this from previous HW
+        mean = self.mean_net(observation)
+        log_std = torch.tanh(self.logstd)
+        log_std_min, log_std_max = self.log_std_bounds
+        log_std = torch.clip(log_std, log_std_min, log_std_max)
+        std = log_std.exp()
+        action_distribution = sac_utils.SquashedNormal(mean, std)
         return action_distribution
 
     def update(self, obs, critic):
         # TODO: get this from previous HW
+        obs = ptu.from_numpy(obs)
+
+        dist = self(obs)
+        action = dist.rsample()
+        log_prob = dist.log_prob(action).sum(-1, keepdim=True)
+        actor_Qs = critic(obs, action)
+        actor_Q = torch.min(*actor_Qs)
+        actor_loss = (self.alpha.detach() * log_prob - actor_Q).mean()
+
+        self.optimizer.zero_grad()
+        actor_loss.backward()
+        self.optimizer.step()
+
+        self.log_alpha_optimizer.zero_grad()
+        alpha_loss = (self.alpha *
+                      (-log_prob - self.target_entropy).detach()).mean()
+        alpha_loss.backward()
+        self.log_alpha_optimizer.step()
+
+        actor_loss, alpha_loss, self.alpha = actor_loss.item(), alpha_loss.item(), self.alpha.item()
         return actor_loss, alpha_loss, self.alpha
