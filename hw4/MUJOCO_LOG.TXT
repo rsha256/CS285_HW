@@ -1,0 +1,27 @@
+Mon Oct 31 04:54:04 2022
+WARNING: Unknown warning type Time = 3.3900.
+
+Mon Oct 31 05:04:26 2022
+WARNING: Unknown warning type Time = 0.0400.
+
+Mon Oct 31 06:01:05 2022
+WARNING: Unknown warning type Time = 2.3800.
+
+Mon Oct 31 06:30:31 2022
+WARNING: Unknown warning type Time = 0.0700.
+
+Mon Oct 31 14:08:04 2022
+WARNING: Unknown warning type Time = 0.0200.
+
+Mon Oct 31 14:38:17 2022
+WARNING: Unknown warning type Time = 3.6000.
+
+Mon Oct 31 14:43:04 2022
+WARNING: Unknown warning type Time = 0.0200.
+
+Mon Oct 31 18:38:15 2022
+WARNING: Unknown warning type Time = 2.5500.
+
+Mon Oct 31 19:21:38 2022
+WARNING: Unknown warning type Time = 4.0900.
+
