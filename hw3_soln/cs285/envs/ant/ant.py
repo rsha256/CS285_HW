@@ -232,7 +232,7 @@ class AntEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.reset_pose = self.init_qpos + self.np_random.uniform(
                         low=noise_low, high=noise_high, size=self.model.nq)
         self.reset_pose[3:7] = np.array([1,0,0,0]) # this is a quaternion
-        self.reset_vel = self.init_qvel + self._reset_noise_scale * self.np_random.randn(self.model.nv)
+        self.reset_vel = self.init_qvel + self._reset_noise_scale * self.np_random.standard_normal(self.model.nv)
 
         #reset the env to that pose/vel
         return self.do_reset(self.reset_pose.copy(), self.reset_vel.copy())
