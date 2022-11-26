@@ -4,6 +4,9 @@ import torch.optim as optim
 from torch import nn
 import torch
 
+import numpy as np
+
+
 def init_method_1(model):
     model.weight.data.uniform_()
     model.bias.data.uniform_()
@@ -24,12 +27,41 @@ class RNDModel(nn.Module, BaseExplorationModel):
 
         # <DONE>: Create two neural networks:
         # 1) f, the random function we are trying to learn
+        self.f = ptu.build_mlp(
+            input_size=self.ob_dim,
+            output_size=self.output_size,
+            n_layers=self.n_layers,
+            size=self.size,
+            activation = 'tanh',
+            output_activation = 'identity',
+            init_method=init_method_1,
+        )
         # 2) f_hat, the function we are using to learn f
+        self.f_hat = ptu.build_mlp(
+            input_size=self.ob_dim,
+            output_size=self.output_size,
+            n_layers=self.n_layers,
+            size=self.size,
+            activation = 'tanh',
+            output_activation = 'identity',
+            init_method=init_method_2,
+        )
+
+        self.optimizer = optimizer_spec.constructor(
+            self.f_hat.parameters(),
+            **self.optimizer_spec.optim_kwargs,
+        )
+
+        self.f.to(ptu.device)
+        self.f_hat.to(ptu.device)
 
     def forward(self, ob_no):
         # <DONE>: Get the prediction error for ob_no
         # HINT: Remember to detach the output of self.f!
-        pass
+        target = self.f(ob_no).detach()
+        pred = self.f_hat(ob_no)
+        error = torch.norm(target - pred, dim=1)
+        return error
 
     def forward_np(self, ob_no):
         ob_no = ptu.from_numpy(ob_no)
@@ -39,4 +71,10 @@ class RNDModel(nn.Module, BaseExplorationModel):
     def update(self, ob_no):
         # <DONE>: Update f_hat using ob_no
         # Hint: Take the mean prediction error across the batch
-        pass
+        if isinstance(ob_no, np.ndarray):
+            ob_no = ptu.from_numpy(ob_no)
+        self.optimizer.zero_grad()
+        loss = torch.mean(self(ob_no))
+        loss.backward()
+        self.optimizer.step()
+        return loss
